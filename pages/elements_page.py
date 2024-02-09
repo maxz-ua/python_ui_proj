@@ -4,7 +4,8 @@ import time
 from selenium.webdriver.common.by import By
 
 from generator.generator import generated_person
-from locators.elements_page_locators import TextBoxPageLocators, CheckBoxPageLocators, RadioButtonPageLocators
+from locators.elements_page_locators import TextBoxPageLocators, CheckBoxPageLocators, RadioButtonPageLocators, \
+    WebTablePageLocators
 from pages.base_page import BasePage
 
 
@@ -83,4 +84,32 @@ class RadioButtonPage(BasePage):
 
     def get_output_result(self):
         return self.element_is_present(self.locators.OUTPUT_RESULT).text
+
+class WebTablePage(BasePage):
+    locators = WebTablePageLocators()
+
+    def add_new_person(self):
+            person_info = next(generated_person())
+            first_name = person_info.first_name
+            last_name = person_info.last_name
+            email = person_info.email
+            age = person_info.age
+            salary = person_info.salary
+            department = person_info.department
+            self.element_is_visible(self.locators.ADD_BUTTON).click()
+            self.element_is_visible(self.locators.FIRST_NAME).send_keys(first_name)
+            self.element_is_visible(self.locators.LAST_NAME).send_keys(last_name)
+            self.element_is_visible(self.locators.EMAIL).send_keys(email)
+            self.element_is_visible(self.locators.AGE).send_keys(age)
+            self.element_is_visible(self.locators.SALARY).send_keys(salary)
+            self.element_is_visible(self.locators.DEPARTMENT).send_keys(department)
+            self.element_is_visible(self.locators.SUBMIT).click()
+            return [first_name, last_name, str(age), email, str(salary), department]
+
+    def check_new_added_person(self):
+        all_persons_list = self.elements_are_present(self.locators.ALL_PERSONS_LIST)
+        data = []
+        for person in all_persons_list:
+            data.append(person.text.splitlines())
+        return data
 
